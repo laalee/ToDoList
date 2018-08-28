@@ -40,6 +40,17 @@ class DetailViewController: UIViewController {
     }
     
     @IBAction func saveButtonClick(_ sender: UIButton) {
+        
+        itemDetail = detailTextView.text
+        
+        itemDetail = itemDetail?.trimmingCharacters(in: .whitespaces)
+
+        self.navigationController?.popViewController(animated: true)
+        
+        NotificationCenter.default.post(
+            name: NSNotification.Name("SAVE_TODO_ITEM"),
+            object: itemDetail
+        )
     }
     
 }

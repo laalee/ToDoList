@@ -12,7 +12,9 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var listTableView: UITableView!
         
-    var todolist: [String] = []
+    var todoList: [String] = []
+    
+    var editItemIndex: Int?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +24,38 @@ class ViewController: UIViewController {
         
         listTableView.dataSource = self
         listTableView.delegate = self
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(saveItem(notification:)),
+            name: NSNotification.Name("SAVE_TODO_ITEM"),
+            object: nil
+        )
+    }
+    
+    @objc func saveItem(notification: Notification) {
+        
+        guard let todoItem = notification.object as? String else { return }
+        
+        guard todoItem != "" else {
+            
+            showToast()
+
+            return
+        }
+        
+        if let index = editItemIndex {
+            
+            todoList[index] = todoItem
+            
+            editItemIndex = nil
+            
+        } else {
+            
+            todoList.append(todoItem)
+        }
+
+        listTableView.reloadData()
     }
     
     @IBAction func addButtonClick(_ sender: UIBarButtonItem) {
@@ -40,7 +74,20 @@ class ViewController: UIViewController {
         
         guard let controller = segue.destination as? DetailViewController else { return }
         
-        controller.itemDetail = todolist[tag]
+        controller.itemDetail = todoList[tag]
+        
+        editItemIndex = tag
+    }
+    
+    func showToast() {
+        
+        let alertToast = UIAlertController(title: "Save failed!", message: "Content should not be blank.", preferredStyle: .alert)
+        
+        present(alertToast, animated: true, completion: nil)
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.5) {
+            alertToast.dismiss(animated: false, completion: nil)
+        }
     }
 
 }
@@ -49,7 +96,7 @@ extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return todolist.count
+        return todoList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -62,7 +109,7 @@ extension ViewController: UITableViewDataSource {
                 return UITableViewCell()
         }
         
-        cell.setListItem(item: todolist[indexPath.row])
+        cell.setListItem(item: todoList[indexPath.row])
         
         cell.editButton.tag = indexPath.row
         
@@ -79,7 +126,7 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == UITableViewCellEditingStyle.delete {
             
-            todolist.remove(at: indexPath.row)
+            todoList.remove(at: indexPath.row)
             
             listTableView.deleteRows(at: [indexPath], with: .automatic)
             
