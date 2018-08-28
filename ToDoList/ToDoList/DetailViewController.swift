@@ -14,6 +14,8 @@ class DetailViewController: UIViewController {
     
     var itemDetail: String?
     
+    var completionHandler: ((String) -> Void)?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -40,6 +42,14 @@ class DetailViewController: UIViewController {
     }
     
     @IBAction func saveButtonClick(_ sender: UIButton) {
+        
+        itemDetail = detailTextView.text
+        
+        itemDetail = itemDetail?.trimmingCharacters(in: .whitespaces)
+        
+        self.navigationController?.popViewController(animated: true)
+        
+        completionHandler?(itemDetail ?? "")
     }
     
 }

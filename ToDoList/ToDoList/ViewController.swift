@@ -13,6 +13,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var listTableView: UITableView!
         
     var todoList: [String] = []
+    
+    var editItemIndex: Int?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,13 +39,56 @@ class ViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         if segue.identifier == "goDetail" {
-            
-            guard let tag = sender as? Int else { return }
-            
+
             guard let controller = segue.destination as? DetailViewController else { return }
             
-            controller.itemDetail = todoList[tag]
+            controller.completionHandler = { todoItem in
+                
+                self.saveTodoIetm(todoItem: todoItem)
+                
+            }
+            
+            if let tag = sender as? Int {
+                
+                controller.itemDetail = todoList[tag]
+                
+                editItemIndex = tag
+            }
         } 
+    }
+    
+    func saveTodoIetm(todoItem: String) {
+        
+        guard todoItem != "" else {
+            
+            showToast()
+            
+            return
+        }
+        
+        if let index = editItemIndex {
+            
+            todoList[index] = todoItem
+            
+            editItemIndex = nil
+            
+        } else {
+            
+            todoList.append(todoItem)
+        }
+        
+        listTableView.reloadData()
+    }
+    
+    func showToast() {
+        
+        let alertToast = UIAlertController(title: "Save failed!", message: "Content should not be blank.", preferredStyle: .alert)
+        
+        present(alertToast, animated: true, completion: nil)
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.5) {
+            alertToast.dismiss(animated: false, completion: nil)
+        }
     }
 
 }
