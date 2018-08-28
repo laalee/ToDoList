@@ -12,6 +12,8 @@ class ListTableViewCell: UITableViewCell {
     
     @IBOutlet weak var listItemLabel: UILabel!
     
+    @IBOutlet weak var editButton: UIButton!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }

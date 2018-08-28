@@ -11,9 +11,7 @@ import UIKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var listTableView: UITableView!
-    
-    @IBOutlet weak var addButton: UIBarButtonItem!
-    
+        
     var todolist: [String] = []
 
     override func viewDidLoad() {
@@ -25,12 +23,32 @@ class ViewController: UIViewController {
         listTableView.dataSource = self
         listTableView.delegate = self
     }
+    
+    @IBAction func addButtonClick(_ sender: UIBarButtonItem) {
+        
+        self.performSegue(withIdentifier: "goDetail", sender: nil)
+    }
+    
+    @objc func editButtonClick(sender: UIButton) {
+        
+        self.performSegue(withIdentifier: "goDetail", sender: sender.tag)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        guard let tag = sender as? Int else { return }
+        
+        guard let controller = segue.destination as? DetailViewController else { return }
+        
+        controller.itemDetail = todolist[tag]
+    }
 
 }
 
 extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         return todolist.count
     }
     
@@ -46,10 +64,15 @@ extension ViewController: UITableViewDataSource {
         
         cell.setListItem(item: todolist[indexPath.row])
         
+        cell.editButton.tag = indexPath.row
+        
+        cell.editButton.addTarget(self, action: #selector(editButtonClick(sender:)), for: .touchUpInside)
+        
         return cell
     }
     
     func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
+        
         return "Delete"
     }
     
@@ -59,6 +82,8 @@ extension ViewController: UITableViewDataSource {
             todolist.remove(at: indexPath.row)
             
             listTableView.deleteRows(at: [indexPath], with: .automatic)
+            
+            listTableView.reloadData()
         }
     }
 }
@@ -66,6 +91,7 @@ extension ViewController: UITableViewDataSource {
 extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
         return UITableViewAutomaticDimension
     }
     
