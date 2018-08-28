@@ -12,7 +12,7 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var listTableView: UITableView!
         
-    var todolist: [String] = []
+    var todoList: [String] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,11 +36,14 @@ class ViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        guard let tag = sender as? Int else { return }
-        
-        guard let controller = segue.destination as? DetailViewController else { return }
-        
-        controller.itemDetail = todolist[tag]
+        if segue.identifier == "goDetail" {
+            
+            guard let tag = sender as? Int else { return }
+            
+            guard let controller = segue.destination as? DetailViewController else { return }
+            
+            controller.itemDetail = todoList[tag]
+        } 
     }
 
 }
@@ -49,7 +52,7 @@ extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return todolist.count
+        return todoList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -62,7 +65,7 @@ extension ViewController: UITableViewDataSource {
                 return UITableViewCell()
         }
         
-        cell.setListItem(item: todolist[indexPath.row])
+        cell.setListItem(item: todoList[indexPath.row])
         
         cell.editButton.tag = indexPath.row
         
@@ -79,7 +82,7 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == UITableViewCellEditingStyle.delete {
             
-            todolist.remove(at: indexPath.row)
+            todoList.remove(at: indexPath.row)
             
             listTableView.deleteRows(at: [indexPath], with: .automatic)
             
