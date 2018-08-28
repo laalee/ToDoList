@@ -13,6 +13,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var listTableView: UITableView!
         
     var todoList: [String] = []
+    
+    var editItemIndex: Int?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,11 +40,16 @@ class ViewController: UIViewController {
         
         if segue.identifier == "goDetail" {
             
-            guard let tag = sender as? Int else { return }
-            
             guard let controller = segue.destination as? DetailViewController else { return }
             
-            controller.itemDetail = todoList[tag]
+            controller.delegate = self
+            
+            if let tag = sender as? Int {
+                
+                controller.itemDetail = todoList[tag]
+                
+                editItemIndex = tag
+            }
         } 
     }
 
@@ -96,6 +103,44 @@ extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         return UITableViewAutomaticDimension
+    }
+    
+}
+
+extension ViewController: todoListDelegate {
+    
+    func saveTodoIetm(todoItem: String) {
+        
+        guard todoItem != "" else {
+            
+            showToast()
+            
+            return
+        }
+        
+        if let index = editItemIndex {
+            
+            todoList[index] = todoItem
+            
+            editItemIndex = nil
+            
+        } else {
+            
+            todoList.append(todoItem)
+        }
+        
+        listTableView.reloadData()
+    }
+    
+    func showToast() {
+        
+        let alertToast = UIAlertController(title: "Save failed!", message: "Content should not be blank.", preferredStyle: .alert)
+        
+        present(alertToast, animated: true, completion: nil)
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.5) {
+            alertToast.dismiss(animated: false, completion: nil)
+        }
     }
     
 }
