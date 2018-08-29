@@ -12,7 +12,7 @@ class DetailViewController: UIViewController {
 
     @IBOutlet weak var detailTextView: UITextView!
     
-    var itemDetail: String?
+    @objc dynamic var itemDetail: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,6 +40,13 @@ class DetailViewController: UIViewController {
     }
     
     @IBAction func saveButtonClick(_ sender: UIButton) {
+        
+        self.navigationController?.popViewController(animated: true)
+        
+        if let itemText = detailTextView.text {
+            
+            itemDetail = itemText.trimmingCharacters(in: .whitespaces)
+        }
     }
     
 }

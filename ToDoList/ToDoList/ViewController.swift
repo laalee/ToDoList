@@ -13,7 +13,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var listTableView: UITableView!
         
     var todoList: [String] = []
-
+    
+    var editItemIndex: Int?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -38,12 +40,61 @@ class ViewController: UIViewController {
         
         if segue.identifier == "goDetail" {
             
-            guard let tag = sender as? Int else { return }
-            
             guard let controller = segue.destination as? DetailViewController else { return }
             
-            controller.itemDetail = todoList[tag]
+            if let tag = sender as? Int {
+                
+                controller.itemDetail = todoList[tag]
+                
+                editItemIndex = tag
+            }
+
+            controller.addObserver(self, forKeyPath: "itemDetail", options: .new, context: nil)
         } 
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        
+        guard let change = change else { return }
+        
+        if let item = change[NSKeyValueChangeKey.newKey] as? String {
+            
+            saveTodoIetm(todoItem: item)
+        }
+    }
+    
+    func saveTodoIetm(todoItem: String) {
+        
+        guard todoItem != "" else {
+            
+            showToast()
+            
+            return
+        }
+        
+        if let index = editItemIndex {
+            
+            todoList[index] = todoItem
+            
+            editItemIndex = nil
+            
+        } else {
+            
+            todoList.append(todoItem)
+        }
+        
+        listTableView.reloadData()
+    }
+    
+    func showToast() {
+        
+        let alertToast = UIAlertController(title: "Save failed!", message: "Content should not be blank.", preferredStyle: .alert)
+        
+        present(alertToast, animated: true, completion: nil)
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.5) {
+            alertToast.dismiss(animated: false, completion: nil)
+        }
     }
 
 }
