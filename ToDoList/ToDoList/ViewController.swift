@@ -15,6 +15,17 @@ class ViewController: UIViewController {
     var todoList: [String] = []
     
     var editItemIndex: Int?
+    
+    var secondController: DetailViewController? = {
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        let vc = storyboard.instantiateViewController(
+            withIdentifier: "DetailViewController")
+            as? DetailViewController
+
+        return vc
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,33 +35,24 @@ class ViewController: UIViewController {
         
         listTableView.dataSource = self
         listTableView.delegate = self
+        
+        secondController?.delegate = self
     }
     
     @IBAction func addButtonClick(_ sender: UIBarButtonItem) {
         
-        self.performSegue(withIdentifier: "goDetail", sender: nil)
+        secondController?.itemDetail = nil
+        
+        self.show(secondController ?? DetailViewController(), sender: nil)
     }
     
     @objc func editButtonClick(sender: UIButton) {
         
-        self.performSegue(withIdentifier: "goDetail", sender: sender.tag)
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        if segue.identifier == "goDetail" {
-            
-            guard let controller = segue.destination as? DetailViewController else { return }
-            
-            controller.delegate = self
-            
-            if let tag = sender as? Int {
-                
-                controller.itemDetail = todoList[tag]
-                
-                editItemIndex = tag
-            }
-        } 
+        editItemIndex = sender.tag
+
+        secondController?.itemDetail = todoList[sender.tag]
+
+        self.show(secondController ?? DetailViewController(), sender: nil)
     }
 
 }

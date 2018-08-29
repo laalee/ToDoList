@@ -18,6 +18,10 @@ class DetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
         setContent()
     }
@@ -33,6 +37,8 @@ class DetailViewController: UIViewController {
         } else {
             
             self.title = "Add"
+            
+            detailTextView.text = ""
         }
     }
 

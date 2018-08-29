@@ -52,7 +52,7 @@
         <!--Detail View Controller-->
         <scene sceneID="f4L-c8-Zko">
             <objects>
-                <viewController id="b2e-bI-N7F" customClass="DetailViewController" customModule="ToDoList" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DetailViewController" id="b2e-bI-N7F" customClass="DetailViewController" customModule="ToDoList" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hbK-Pu-CKq">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
