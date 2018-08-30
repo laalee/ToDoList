@@ -13,8 +13,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var listTableView: UITableView!
         
     var todoList: [String] = []
-    
-    var editItemIndex: Int?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,52 +40,32 @@ class ViewController: UIViewController {
 
             guard let controller = segue.destination as? DetailViewController else { return }
             
-            controller.completionHandler = { todoItem in
+            if let index = sender as? Int {
                 
-                self.saveTodoIetm(todoItem: todoItem)
+                controller.loadViewIfNeeded()
                 
+                controller.detailTextView.text = todoList[index]
+
+                controller.editHandler = { text in
+
+                    let indexPath = IndexPath(row: index, section: 0)
+                    
+                    guard let cell = self.listTableView.cellForRow(at: indexPath) as? ListTableViewCell else { return }
+                    
+                    cell.listItemLabel.text = text
+                    
+                    self.todoList[index] = text
+                }
+                
+            } else {
+                
+                controller.addHandler = { text in
+                    
+                    self.todoList.append(text)
+                    
+                    self.listTableView.reloadData()
+                }
             }
-            
-            if let tag = sender as? Int {
-                
-                controller.itemDetail = todoList[tag]
-                
-                editItemIndex = tag
-            }
-        } 
-    }
-    
-    func saveTodoIetm(todoItem: String) {
-        
-        guard todoItem != "" else {
-            
-            showToast()
-            
-            return
-        }
-        
-        if let index = editItemIndex {
-            
-            todoList[index] = todoItem
-            
-            editItemIndex = nil
-            
-        } else {
-            
-            todoList.append(todoItem)
-        }
-        
-        listTableView.reloadData()
-    }
-    
-    func showToast() {
-        
-        let alertToast = UIAlertController(title: "Save failed!", message: "Content should not be blank.", preferredStyle: .alert)
-        
-        present(alertToast, animated: true, completion: nil)
-        
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.5) {
-            alertToast.dismiss(animated: false, completion: nil)
         }
     }
 

@@ -12,9 +12,9 @@ class DetailViewController: UIViewController {
 
     @IBOutlet weak var detailTextView: UITextView!
     
-    var itemDetail: String?
+    var addHandler: ((String) -> Void)?
     
-    var completionHandler: ((String) -> Void)?
+    var editHandler: ((String) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,15 +24,13 @@ class DetailViewController: UIViewController {
     
     func setContent() {
         
-        if let itemDetail = itemDetail {
-            
-            self.title = "Edit"
-            
-            detailTextView.text = itemDetail
-            
-        } else {
+        if detailTextView.text == "" {
             
             self.title = "Add"
+
+        } else {
+            
+            self.title = "Edit"
         }
     }
 
@@ -43,13 +41,20 @@ class DetailViewController: UIViewController {
     
     @IBAction func saveButtonClick(_ sender: UIButton) {
         
-        itemDetail = detailTextView.text
-        
-        itemDetail = itemDetail?.trimmingCharacters(in: .whitespaces)
+        guard let text = detailTextView.text else { return }
         
         self.navigationController?.popViewController(animated: true)
         
-        completionHandler?(itemDetail ?? "")
+        if let handler = addHandler {
+            
+            handler(text)
+            
+        } else {
+            
+            editHandler?(text)
+        }
+        
+        
     }
     
 }
